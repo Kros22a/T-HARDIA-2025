@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin - T-Hardia</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="animated-header">
+            <h1 class="glitch-text">Panel Administrativo</h1>
+            <p class="subtitle">Gestión de usuarios, comparaciones y encuestas</p>
+        </header>
+        
+        <nav class="main-nav animated-nav">
+            <ul class="nav-list">
+                <li><a href="index.html" class="nav-link">Inicio</a></li>
+                <li><a href="hardware-comparison.html" class="nav-link">Comparar Hardware</a></li>
+                <li><a href="survey.html" class="nav-link">Encuesta</a></li>
+                <li><a href="blog.html" class="nav-link">Blog</a></li>
+                <li><a href="admin.html" class="nav-link active">Admin</a></li>
+                
+                <!-- Nombre del usuario logueado -->
+                <li id="user-display" style="display: none;">
+                    <span id="user-greeting" style="color: var(--light); font-weight: 600;"></span>
+                </li>
+
+                <!-- 🔐 Botón Login -->
+                <li id="login-nav">
+                    <a href="login.html" class="nav-link btn-login">Login</a>
+                </li>
+
+                <!-- 🚪 Botón Logout -->
+                <li id="logout-nav" style="display: none;">
+                    <button id="logout-btn" class="btn btn-primary">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
+        <main class="main-content">
+            <section class="admin-dashboard slide-up">
+                <h2><i class="fas fa-chart-line"></i> Dashboard Administrativo</h2>
+                
+                <div class="admin-stats">
+                    <div class="stat-card pulse">
+                        <h3><i class="fas fa-users"></i> Usuarios</h3>
+                        <p id="users-count">0</p>
+                    </div>
+                    <div class="stat-card pulse">
+                        <h3><i class="fas fa-laptop"></i> Comparaciones</h3>
+                        <p id="comparisons-count">0</p>
+                    </div>
+                    <div class="stat-card pulse">
+                        <h3><i class="fas fa-poll"></i> Encuestas</h3>
+                        <p id="surveys-count">0</p>
+                    </div>
+                    <div class="stat-card pulse">
+                        <h3><i class="fas fa-blog"></i> Posts de Blog</h3>
+                        <p id="blog-count">0</p>
+                    </div>
+                </div>
+                
+                <div class="admin-sections">
+                    <div class="admin-section">
+                        <h3><i class="fas fa-user-cog"></i> Gestión de Usuarios</h3>
+                        <div id="users-list">
+                            <p>Cargando usuarios...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-section">
+                        <h3><i class="fas fa-laptop-code"></i> Comparaciones Recientes</h3>
+                        <div id="comparisons-list">
+                            <p>Cargando comparaciones...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-section">
+                        <h3><i class="fas fa-poll-h"></i> Respuestas de Encuestas</h3>
+                        <div id="survey-responses">
+                            <p>Cargando respuestas...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        // Verificar autenticación de admin
+        document.addEventListener('DOMContentLoaded', function() {
+            const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
+            const userRole = localStorage.getItem("userRole");
+            
+            // Si no es admin, redirigir al inicio
+            if (!isLoggedIn || userRole !== "admin") {
+                window.location.href = "index.html";
+                return;
+            }
+
+            // Actualizar UI de autenticación
+            const loginNav = document.getElementById("login-nav");
+            const logoutNav = document.getElementById("logout-nav");
+            const userDisplay = document.getElementById("user-display");
+            const userGreeting = document.getElementById("user-greeting");
+
+            if (isLoggedIn && loginNav && logoutNav) {
+                const username = localStorage.getItem("username") || localStorage.getItem("userEmail");
+                const displayName = username ? username.split('@')[0] : 'Admin';
+
+                loginNav.style.display = "none";
+                logoutNav.style.display = "inline-block";
+                userDisplay.style.display = "inline-block";
+                userGreeting.textContent = `Hola, ${displayName} 👑`;
+
+                // Evento de logout
+                const logoutBtn = document.getElementById("logout-btn");
+                if (logoutBtn) {
+                    logoutBtn.addEventListener("click", () => {
+                        localStorage.removeItem("userLoggedIn");
+                        localStorage.removeItem("userEmail");
+                        localStorage.removeItem("userId");
+                        localStorage.removeItem("username");
+                        localStorage.removeItem("userRole");
+                        localStorage.removeItem("authToken");
+                        window.location.href = "index.html";
+                    });
+                }
+            }
+        });
+    </script>
+
+    <script src="js/admin.js"></script>
+    <script src="js/auth.js"></script>
+<script>
+    // Verificación adicional específica para admin.html
+    document.addEventListener('DOMContentLoaded', function() {
+        const isLoggedIn = localStorage.getItem("userLoggedIn") === "true";
+        const userRole = localStorage.getItem("userRole");
+        
+        // Si no es admin, redirigir al inicio
+        if (!isLoggedIn || userRole !== "admin") {
+            window.location.href = "index.html";
+        }
+    });
+</script>
+
+</body>
+</html>
