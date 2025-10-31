@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
             formData.append("username", email);
             formData.append("password", password);
 
-            const res = await fetch(`${API_URL}/login`, {
+            const res = await fetch(`${API_URL}/users/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: formData,
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!res.ok) throw new Error(loginData.detail || "Error al iniciar sesión.");
 
             // Paso 2: Obtener datos del usuario usando el token
-            const userRes = await fetch(`${API_URL}/me?token=${loginData.access_token}`);
+            const userRes = await fetch(`${API_URL}/users/me?token=${loginData.access_token}`);
 
             const userData = await userRes.json();
 
