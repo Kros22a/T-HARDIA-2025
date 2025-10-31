@@ -304,22 +304,23 @@
         return;
     }
 
-    // Mostrar carga - con verificación de elementos
-    if (btn) btn.disabled = true;
-    if (btnText) btnText.style.display = 'none';
-    if (btnLoading) btnLoading.style.display = 'inline-block';
+// Mostrar carga - con verificación de elementos
+if (btn) btn.disabled = true;
+if (btnText) btnText.style.display = 'none';
+if (btnLoading) btnLoading.style.display = 'inline-block';
 
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                component1,
-                component2,
-                user_id: "test_user",
-                category
-            }),
-        });
+try {
+    const response = await fetch(COMPARISONS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            component1,
+            component2,
+            user_id: "test_user",
+            category
+        }),
+    });
+
 
         const data = await response.json();
 
