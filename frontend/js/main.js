@@ -1,5 +1,5 @@
 // Variables globales
-const API_BASE_URL = 'http://127.0.0.1:8000/api/v1';
+const API_URL = "https://t-hardia-2025-production.up.railway.app/api/v1";
 
 // Cargar preguntas de encuesta
 async function loadSurveyQuestions() {
