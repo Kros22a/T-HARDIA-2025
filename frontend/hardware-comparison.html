@@ -284,55 +284,58 @@
         });
     }
 
-    // ===============================
+        // ===============================
     // 🔹 ENVÍO DEL FORMULARIO
     // ===============================
     async function handleComparisonSubmit(e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        const component1 = document.getElementById('component1').value.trim();
-        const component2 = document.getElementById('component2').value.trim();
-        const category = document.getElementById('category').value || null;
-        
-        // Corrección: Obtener correctamente los elementos del botón
-        const btn = document.querySelector('.btn-primary');
-        const btnText = btn ? btn.querySelector('.btn-text') : null;
-        const btnLoading = btn ? btn.querySelector('.btn-loading') : null;
+    const component1 = document.getElementById('component1').value.trim();
+    const component2 = document.getElementById('component2').value.trim();
+    const category = document.getElementById('category').value || null;
+    
+    // Corrección: Obtener correctamente los elementos del botón
+    const btn = document.querySelector('.btn-primary');
+    const btnText = btn ? btn.querySelector('.btn-text') : null;
+    const btnLoading = btn ? btn.querySelector('.btn-loading') : null;
 
-        if (!component1 || !component2) {
-            alert("Por favor, ingresa ambos componentes antes de comparar.");
-            return;
+    if (!component1 || !component2) {
+        alert("Por favor, ingresa ambos componentes antes de comparar.");
+        return;
+    }
+
+    // Mostrar carga - con verificación de elementos
+    if (btn) btn.disabled = true;
+    if (btnText) btnText.style.display = 'none';
+    if (btnLoading) btnLoading.style.display = 'inline-block';
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                component1,
+                component2,
+                user_id: "test_user",
+                category
+            }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.detail || "Error en el servidor");
         }
 
-        // Mostrar carga - con verificación de elementos
-        if (btn) btn.disabled = true;
-        if (btnText) btnText.style.display = 'none';
-        if (btnLoading) btnLoading.style.display = 'inline-block';
-
-        try {
-            // 🔧 PARA PRUEBAS: Simular comparación si el endpoint no existe
-            const simulatedResponse = {
-                component1: component1,
-                component2: component2,
-                result: {
-                    performance_comparison: `Comparando ${component1} vs ${component2}:\n\n• Rendimiento: ${component1} tiene un 15% más de rendimiento en benchmarks\n• Consumo: ${component2} consume 12% menos energía\n• Precio: ${component1} es $50 más caro\n• Durabilidad: Ambos tienen garantía de 3 años`,
-                    recommendation: `${component1} es mejor para gaming de alto rendimiento, mientras que ${component2} es más eficiente energéticamente.`,
-                    price_performance: `Relación precio-rendimiento: ${component2} ofrece mejor valor por dinero.`
-                }
-            };
-
-            // Mostrar resultado simulado
+        if (data.result) {
             const comparisonContent = document.getElementById("comparison-content");
             if (comparisonContent) {
                 comparisonContent.innerHTML = `
                     <div class="comparison-ai-result">
                         <h3>📊 Análisis Técnico</h3>
-                        <div class="comparison-text">${simulatedResponse.result.performance_comparison.replace(/\n/g, "<br>")}</div>
+                        <div class="comparison-text">${data.result.performance_comparison.replace(/\n/g, "<br>")}</div>
                         <div class="comparison-recommendation">
-                            <p><strong>💡 Recomendación:</strong> ${simulatedResponse.result.recommendation}</p>
-                        </div>
-                        <div class="price-performance">
-                            <p><strong>💰 Relación Precio-Rendimiento:</strong> ${simulatedResponse.result.price_performance}</p>
+                            <p><strong>💡 Recomendación:</strong> ${data.result.recommendation}</p>
                         </div>
                     </div>
                 `;
@@ -343,17 +346,19 @@
                     comparisonContent.scrollIntoView({ behavior: "smooth" });
                 }
             }
-
-        } catch (error) {
-            console.error("Error:", error);
-            alert("❌ Error al realizar la comparación: " + error.message);
-        } finally {
-            // Ocultar carga - con verificación de elementos
-            if (btn) btn.disabled = false;
-            if (btnText) btnText.style.display = 'inline-block';
-            if (btnLoading) btnLoading.style.display = 'none';
+        } else {
+            throw new Error("No se recibió resultado válido desde la IA.");
         }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("❌ Error al realizar la comparación: " + error.message);
+    } finally {
+        // Ocultar carga - con verificación de elementos
+        if (btn) btn.disabled = false;
+        if (btnText) btnText.style.display = 'inline-block';
+        if (btnLoading) btnLoading.style.display = 'none';
     }
+}
 
     // ===============================
     // 🔹 INICIALIZACIÓN
