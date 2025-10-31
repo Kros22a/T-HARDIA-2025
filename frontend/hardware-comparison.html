@@ -24,20 +24,19 @@
                         <li><a href="hardware-comparison.html" class="nav-link active">Comparar</a></li>
                         <li><a href="survey.html" class="nav-link">Encuestas</a></li>
                         <li><a href="blog.html" class="nav-link">Blog</a></li>
-                         <li>
-                        <span id="user-greeting" style="display:none; color: var(--light); font-weight: 600;"></span>
-                    </li>
+                        <li>
+                            <span id="user-greeting" style="display:none; color: var(--light); font-weight: 600;"></span>
+                        </li>
 
-                    <!-- 🔐 Botón Login -->
-                    <li id="login-nav">
-                        <a href="login.html" class="nav-link btn-login">Login</a>
-                    </li>
+                        <!-- 🔐 Botón Login -->
+                        <li id="login-nav">
+                            <a href="login.html" class="nav-link btn-login">Login</a>
+                        </li>
 
-                    <!-- 🚪 Botón Logout -->
-                    <li id="logout-nav" style="display:none;">
-                        <button id="logout-btn" class="btn btn-primary">Cerrar sesión</button>
-                    </li>
-                </ul>
+                        <!-- 🚪 Botón Logout -->
+                        <li id="logout-nav" style="display:none;">
+                            <button id="logout-btn" class="btn btn-primary">Cerrar sesión</button>
+                        </li>
                     </ul>
                     <div class="mobile-menu-toggle">
                         <i class="fas fa-bars"></i>
@@ -198,8 +197,8 @@
     // ===============================
     // 🔹 CONFIGURACIÓN DEL BACKEND
     // ===============================
-    const API_BASE_URL = "https://t-hardia-2025-production.up.railway.app/api/v1";
-    const COMPARISONS_URL = `${API_BASE_URL}/comparisons`;
+    const API_BASE_URL_COMP = "https://t-hardia-2025-production.up.railway.app/api/v1";
+    const COMPARISONS_URL = `${API_BASE_URL_COMP}/comparisons`;
 
     // ===============================
     // 🔹 FUNCIONES DE INTERFAZ
@@ -284,59 +283,126 @@
         });
     }
 
-        // ===============================
-    // 🔹 ENVÍO DEL FORMULARIO
+    // ===============================
+    // 🔹 ENVÍO DEL FORMULARIO (REAL)
     // ===============================
     async function handleComparisonSubmit(e) {
-    e.preventDefault();
+        e.preventDefault();
 
-    const component1 = document.getElementById('component1').value.trim();
-    const component2 = document.getElementById('component2').value.trim();
-    const category = document.getElementById('category').value || null;
-    
-    // Corrección: Obtener correctamente los elementos del botón
-    const btn = document.querySelector('.btn-primary');
-    const btnText = btn ? btn.querySelector('.btn-text') : null;
-    const btnLoading = btn ? btn.querySelector('.btn-loading') : null;
+        const component1 = document.getElementById('component1').value.trim();
+        const component2 = document.getElementById('component2').value.trim();
+        const category = document.getElementById('category').value || null;
+        
+        // Corrección: Obtener correctamente los elementos del botón
+        const btn = document.querySelector('.btn-primary');
+        const btnText = btn ? btn.querySelector('.btn-text') : null;
+        const btnLoading = btn ? btn.querySelector('.btn-loading') : null;
 
-    if (!component1 || !component2) {
-        alert("Por favor, ingresa ambos componentes antes de comparar.");
-        return;
-    }
-
-// Mostrar carga - con verificación de elementos
-if (btn) btn.disabled = true;
-if (btnText) btnText.style.display = 'none';
-if (btnLoading) btnLoading.style.display = 'inline-block';
-
-try {
-    const response = await fetch(COMPARISONS_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            component1,
-            component2,
-            user_id: "test_user",
-            category
-        }),
-    });
-
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.detail || "Error en el servidor");
+        if (!component1 || !component2) {
+            alert("Por favor, ingresa ambos componentes antes de comparar.");
+            return;
         }
 
-        if (data.result) {
+        // Mostrar carga - con verificación de elementos
+        if (btn) btn.disabled = true;
+        if (btnText) btnText.style.display = 'none';
+        if (btnLoading) btnLoading.style.display = 'inline-block';
+
+        try {
+            const response = await fetch(COMPARISONS_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    component1,
+                    component2,
+                    user_id: "test_user",
+                    category
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Error en el servidor");
+            }
+
+            if (data.result) {
+                const comparisonContent = document.getElementById("comparison-content");
+                if (comparisonContent) {
+                    let performanceHtml = '';
+                    let recommendationHtml = '';
+                    let pricePerformanceHtml = '';
+
+                    if (data.result.performance_comparison) {
+                        performanceHtml = `
+                            <div class="result-section">
+                                <h4><i class="fas fa-tachometer-alt"></i> Comparación de Rendimiento</h4>
+                                <div class="performance-content">
+                                    ${typeof data.result.performance_comparison === 'string' 
+                                      ? data.result.performance_comparison.replace(/\n/g, "<br>") 
+                                      : JSON.stringify(data.result.performance_comparison, null, 2)}
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    if (data.result.recommendation) {
+                        recommendationHtml = `
+                            <div class="result-section">
+                                <h4><i class="fas fa-star"></i> Recomendación Principal</h4>
+                                <div class="summary-content">
+                                    ${data.result.recommendation}
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    if (data.result.price_performance) {
+                        pricePerformanceHtml = `
+                            <div class="result-section">
+                                <h4><i class="fas fa-dollar-sign"></i> Relación Precio-Rendimiento</h4>
+                                <div class="price-content">
+                                    ${typeof data.result.price_performance === 'string' 
+                                      ? data.result.price_performance 
+                                      : JSON.stringify(data.result.price_performance, null, 2)}
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    comparisonContent.innerHTML = `
+                        <div class="comparison-content">
+                            <div class="comparison-result">
+                                <h3>Comparación: ${data.component1} vs ${data.component2}</h3>
+                                ${recommendationHtml}
+                                ${performanceHtml}
+                                ${pricePerformanceHtml}
+                            </div>
+                        </div>
+                    `;
+                    
+                    const comparisonResults = document.getElementById("comparison-results");
+                    if (comparisonResults) {
+                        comparisonResults.style.display = "block";
+                        comparisonContent.scrollIntoView({ behavior: "smooth" });
+                    }
+                }
+            } else {
+                throw new Error("No se recibió resultado válido desde la IA.");
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
             const comparisonContent = document.getElementById("comparison-content");
             if (comparisonContent) {
                 comparisonContent.innerHTML = `
-                    <div class="comparison-ai-result">
-                        <h3>📊 Análisis Técnico</h3>
-                        <div class="comparison-text">${data.result.performance_comparison.replace(/\n/g, "<br>")}</div>
-                        <div class="comparison-recommendation">
-                            <p><strong>💡 Recomendación:</strong> ${data.result.recommendation}</p>
+                    <div class="comparison-content">
+                        <div class="comparison-result">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Error en Comparación</h3>
+                            <div class="error-content">
+                                <p>${error.message}</p>
+                                <p>Por favor intenta con otros componentes o verifica la conexión.</p>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -347,19 +413,13 @@ try {
                     comparisonContent.scrollIntoView({ behavior: "smooth" });
                 }
             }
-        } else {
-            throw new Error("No se recibió resultado válido desde la IA.");
+        } finally {
+            // Ocultar carga - con verificación de elementos
+            if (btn) btn.disabled = false;
+            if (btnText) btnText.style.display = 'inline-block';
+            if (btnLoading) btnLoading.style.display = 'none';
         }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("❌ Error al realizar la comparación: " + error.message);
-    } finally {
-        // Ocultar carga - con verificación de elementos
-        if (btn) btn.disabled = false;
-        if (btnText) btnText.style.display = 'inline-block';
-        if (btnLoading) btnLoading.style.display = 'none';
     }
-}
 
     // ===============================
     // 🔹 INICIALIZACIÓN
