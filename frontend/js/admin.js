@@ -1,5 +1,5 @@
 // Panel administrativo
-const API_BASE_URL = '/api/v1';
+const API_URL = "https://t-hardia-2025-production.up.railway.app/api/v1";
 
 document.addEventListener('DOMContentLoaded', function() {
     loadAdminData();
