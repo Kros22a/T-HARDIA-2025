@@ -1,5 +1,6 @@
 // Variables globales
 const API_URL = "https://t-hardia-2025-production.up.railway.app/api/v1";
+const API_URL = API_BASE_URL;
 
 // Cargar preguntas de encuesta
 async function loadSurveyQuestions() {
