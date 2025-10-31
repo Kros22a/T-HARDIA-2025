@@ -187,18 +187,38 @@
 
 
     <script>
-        // Reiniciar encuesta
-        function restartSurvey() {
-            document.getElementById('survey-completed').style.display = 'none';
-            document.getElementById('survey-questions').style.display = 'block';
-            document.getElementById('survey-progress').style.display = 'block';
+    // Reiniciar encuesta
+    function restartSurvey() {
+        document.getElementById('survey-completed').style.display = 'none';
+        document.getElementById('survey-questions').style.display = 'block';
+        document.getElementById('survey-progress').style.display = 'block';
+        
+        // Verificar que la función exista antes de llamarla
+        if (typeof loadSurveyQuestions === 'function') {
             loadSurveyQuestions();
+        } else {
+            console.error('loadSurveyQuestions no está definida');
+            document.getElementById('survey-questions').innerHTML = 
+                '<div class="loading-state"><i class="fas fa-exclamation-triangle"></i><p>Error al cargar las preguntas. Función no encontrada.</p></div>';
         }
+    }
 
-        // Cargar encuesta al iniciar
-        document.addEventListener('DOMContentLoaded', function() {
+    // Cargar encuesta al iniciar
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar que la función exista antes de llamarla
+        if (typeof loadSurveyQuestions === 'function') {
             loadSurveyQuestions();
-        });
-    </script>
+        } else {
+            console.error('loadSurveyQuestions no está definida');
+            // Mostrar mensaje de error en la UI
+            const questionsDiv = document.getElementById('survey-questions');
+            if (questionsDiv) {
+                questionsDiv.innerHTML = 
+                    '<div class="loading-state"><i class="fas fa-exclamation-triangle"></i><p>Error al cargar las preguntas. Función no encontrada.</p></div>';
+            }
+        }
+    });
+</script>
+
 </body>
 </html>
