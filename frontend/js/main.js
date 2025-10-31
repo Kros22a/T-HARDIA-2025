@@ -1,6 +1,6 @@
-// Variables globales
-const API_URL = "https://t-hardia-2025-production.up.railway.app/api/v1";
-const API_URL = API_BASE_URL;
+// Variables globales - DECLARA SOLO UNA VEZ
+const API_BASE_URL = "https://t-hardia-2025-production.up.railway.app/api/v1";
+// NO declares API_URL si ya usas API_BASE_URL, o usa solo una
 
 // Cargar preguntas de encuesta
 async function loadSurveyQuestions() {
