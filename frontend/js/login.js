@@ -1,4 +1,4 @@
-const API_URL = "http://127.0.0.1:8000/api/v1/users";
+const API_URL = "https://t-hardia-2025-production.up.railway.app/api/v1";
 
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("login-form");
