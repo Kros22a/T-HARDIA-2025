@@ -97,15 +97,17 @@ async def create_question(question: SurveyQuestionCreate):
 # -----------------------------
 @router.get("/questions/random", response_model=List[SurveyQuestion])
 async def get_random_questions(count: int = 5):
-    """Obtener preguntas aleatorias (máximo 5 de 10)"""
+    """Obtener preguntas aleatorias (máximo 5 de 10) con IDs fijos"""
     if count > 5:
         count = 5
     
-    selected_questions = random.sample(PREDEFINED_QUESTIONS, count)
+    # Selecciona índices aleatorios de las preguntas predefinidas
+    selected_indices = random.sample(range(len(PREDEFINED_QUESTIONS)), count)
     questions = []
-    for i, q in enumerate(selected_questions):
+    for idx in selected_indices:
+        q = PREDEFINED_QUESTIONS[idx]
         question = SurveyQuestion(
-            id=str(uuid.uuid4()),
+            id=str(idx + 1),  # ID fijo basado en el índice: "1", "2", ..., "10"
             question=q["question"],
             category=q["category"],
             created_at=datetime.utcnow()
@@ -172,11 +174,11 @@ async def get_all_responses():
 # -----------------------------
 @router.get("/questions", response_model=List[SurveyQuestion])
 async def get_all_questions():
-    """Obtener todas las preguntas"""
+    """Obtener todas las preguntas con IDs fijos"""
     questions = []
     for i, q in enumerate(PREDEFINED_QUESTIONS):
         question = SurveyQuestion(
-            id=str(i + 1),
+            id=str(i + 1),  # IDs fijos: "1", "2", ..., "10"
             question=q["question"],
             category=q["category"],
             created_at=datetime.utcnow()
