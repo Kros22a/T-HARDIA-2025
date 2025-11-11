@@ -1,4 +1,4 @@
-// Panel administrativo
+// Panel administrativo admin.js
 const API_URL = "https://t-hardia-2025-production.up.railway.app/api/v1";
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -26,23 +26,41 @@ async function loadAdminData() {
 
 async function loadStats() {
     try {
+        const authToken = localStorage.getItem('authToken');
+        
         // Cargar usuarios
-        const usersResponse = await fetch(`${API_URL}/users/`);
+        const usersResponse = await fetch(`${API_URL}/users/`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
         const users = await usersResponse.json();
         document.getElementById('users-count').textContent = users.length;
         
         // Cargar comparaciones
-        const comparisonsResponse = await fetch(`${API_URL}/comparisons/`);
+        const comparisonsResponse = await fetch(`${API_URL}/comparisons/`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
         const comparisons = await comparisonsResponse.json();
         document.getElementById('comparisons-count').textContent = comparisons.length;
         
         // Cargar respuestas de encuestas
-        const surveysResponse = await fetch(`${API_URL}/surveys/responses`);
+        const surveysResponse = await fetch(`${API_URL}/surveys/responses`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
         const surveys = await surveysResponse.json();
         document.getElementById('surveys-count').textContent = surveys.length;
         
         // Cargar posts de blog
-        const blogResponse = await fetch(`${API_URL}/blog/`);
+        const blogResponse = await fetch(`${API_URL}/blog/`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
         const blogPosts = await blogResponse.json();
         document.getElementById('blog-count').textContent = blogPosts.length;
         
@@ -53,7 +71,13 @@ async function loadStats() {
 
 async function loadUsers() {
     try {
-        const response = await fetch(`${API_URL}/users/`);
+        const authToken = localStorage.getItem('authToken');
+        
+        const response = await fetch(`${API_URL}/users/`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
         const users = await response.json();
         
         const usersList = document.getElementById('users-list');
@@ -82,7 +106,13 @@ async function loadUsers() {
 
 async function loadComparisons() {
     try {
-        const response = await fetch(`${API_URL}/comparisons/`);
+        const authToken = localStorage.getItem('authToken');
+        
+        const response = await fetch(`${API_URL}/comparisons/`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
         const comparisons = await response.json();
         
         const comparisonsList = document.getElementById('comparisons-list');
@@ -108,21 +138,53 @@ async function loadComparisons() {
     }
 }
 
+// Nueva función para cargar preguntas
+async function loadQuestions() {
+    try {
+        const authToken = localStorage.getItem('authToken');
+        const response = await fetch(`${API_URL}/surveys/questions`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+        const questions = await response.json();
+        // Crea un mapa ID -> texto (ej. {1: "¿Prefieres CPUs Intel o AMD?", ...})
+        const questionMap = {};
+        questions.forEach(q => {
+            questionMap[q.id] = q.question;  // Usa q.question para el texto
+        });
+        return questionMap;
+    } catch (error) {
+        console.error('Error loading questions:', error);
+        return {};  // Retorna vacío si falla
+    }
+}
+
 async function loadSurveyResponses() {
     try {
-        const response = await fetch(`${API_URL}/surveys/responses`);
+        const authToken = localStorage.getItem('authToken');
+        
+        // Carga las preguntas primero
+        const questionMap = await loadQuestions();
+        
+        const response = await fetch(`${API_URL}/surveys/responses`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
         const responses = await response.json();
         
         const responsesList = document.getElementById('survey-responses');
         let html = '<div class="responses-list">';
         
         responses.slice(0, 10).forEach(resp => {
+            const questionText = questionMap[resp.question_id] || `Pregunta ID: ${resp.question_id}`;  // Fallback si no encuentra
             html += `
                 <div class="response-item">
-                    <p>Pregunta ID: ${resp.question_id}</p>
-                    <p>Usuario: ${resp.user_id}</p>
-                    <p>Respuesta: ${resp.response ? 'Sí' : 'No'}</p>
-                    <p>Fecha: ${new Date(resp.created_at).toLocaleDateString()}</p>
+                    <p><strong>Pregunta:</strong> ${questionText}</p>
+                    <p><strong>Usuario:</strong> ${resp.user_id}</p>
+                    <p><strong>Respuesta:</strong> ${resp.response ? 'Sí' : 'No'}</p>
+                    <p><strong>Fecha:</strong> ${new Date(resp.created_at).toLocaleDateString()}</p>
                 </div>
             `;
         });
