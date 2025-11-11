@@ -27,22 +27,22 @@ async function loadAdminData() {
 async function loadStats() {
     try {
         // Cargar usuarios
-        const usersResponse = await fetch(`${API_BASE_URL}/users/`);
+        const usersResponse = await fetch(`${API_URL}/users/`);
         const users = await usersResponse.json();
         document.getElementById('users-count').textContent = users.length;
         
         // Cargar comparaciones
-        const comparisonsResponse = await fetch(`${API_BASE_URL}/comparisons/`);
+        const comparisonsResponse = await fetch(`${API_URL}/comparisons/`);
         const comparisons = await comparisonsResponse.json();
         document.getElementById('comparisons-count').textContent = comparisons.length;
         
         // Cargar respuestas de encuestas
-        const surveysResponse = await fetch(`${API_BASE_URL}/surveys/responses`);
+        const surveysResponse = await fetch(`${API_URL}/surveys/responses`);
         const surveys = await surveysResponse.json();
         document.getElementById('surveys-count').textContent = surveys.length;
         
         // Cargar posts de blog
-        const blogResponse = await fetch(`${API_BASE_URL}/blog/`);
+        const blogResponse = await fetch(`${API_URL}/blog/`);
         const blogPosts = await blogResponse.json();
         document.getElementById('blog-count').textContent = blogPosts.length;
         
@@ -53,7 +53,7 @@ async function loadStats() {
 
 async function loadUsers() {
     try {
-        const response = await fetch(`${API_BASE_URL}/users/`);
+        const response = await fetch(`${API_URL}/users/`);
         const users = await response.json();
         
         const usersList = document.getElementById('users-list');
@@ -82,7 +82,7 @@ async function loadUsers() {
 
 async function loadComparisons() {
     try {
-        const response = await fetch(`${API_BASE_URL}/comparisons/`);
+        const response = await fetch(`${API_URL}/comparisons/`);
         const comparisons = await response.json();
         
         const comparisonsList = document.getElementById('comparisons-list');
@@ -110,7 +110,7 @@ async function loadComparisons() {
 
 async function loadSurveyResponses() {
     try {
-        const response = await fetch(`${API_BASE_URL}/surveys/responses`);
+        const response = await fetch(`${API_URL}/surveys/responses`);
         const responses = await response.json();
         
         const responsesList = document.getElementById('survey-responses');
